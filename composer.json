@@ -1,14 +1,28 @@
 {
     "name": "dskripchenko/laravel-admin-jobs",
     "description": "Failed jobs / batches / queue depth viewer для dskripchenko/laravel-admin.",
-    "license": "MIT",
     "type": "library",
+    "keywords": [
+        "laravel",
+        "admin",
+        "queue",
+        "failed-jobs",
+        "job-batches",
+        "workers",
+        "dskripchenko"
+    ],
+    "homepage": "https://github.com/dskripchenko/laravel-admin-jobs",
+    "license": "MIT",
     "authors": [
         {
             "name": "Denis Skripchenko",
             "email": "denskrp90@gmail.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/dskripchenko/laravel-admin-jobs/issues",
+        "source": "https://github.com/dskripchenko/laravel-admin-jobs"
+    },
     "require": {
         "php": "^8.5",
         "dskripchenko/laravel-admin": "^1.0"
@@ -35,11 +49,14 @@
             "providers": [
                 "Dskripchenko\\LaravelAdminJobs\\AdminJobsServiceProvider"
             ]
+        },
+        "branch-alias": {
+            "dev-main": "1.x-dev"
         }
     },
     "config": {
         "sort-packages": true
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
