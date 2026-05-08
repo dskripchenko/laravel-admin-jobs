@@ -1,13 +1,33 @@
 # dskripchenko/laravel-admin-jobs
 
-Viewer для Laravel queue (failed jobs, batches, queue depth) для `dskripchenko/laravel-admin`.
+> 🌐 **English** · [Русский](README.ru.md) · [Deutsch](README.de.md) · [中文](README.zh.md)
 
-Полная спецификация: [../../docs/sister-packs/jobs.md](../../docs/sister-packs/jobs.md).
+Viewer for Laravel queues: failed jobs, batches, queue depth. Lightweight, no dashboard server.
 
-## Статус
+A sister-pack for [`dskripchenko/laravel-admin`](https://github.com/dskripchenko/laravel-admin).
 
-Локальный dev (монорепо). Перед релизом — отдельный репозиторий.
+[![Packagist](https://img.shields.io/packagist/v/dskripchenko/laravel-admin-jobs)](https://packagist.org/packages/dskripchenko/laravel-admin-jobs)
+[![License](https://img.shields.io/packagist/l/dskripchenko/laravel-admin-jobs)](LICENSE)
 
-## Лицензия
+## Install
 
-MIT.
+```bash
+composer require dskripchenko/laravel-admin-jobs
+php artisan migrate
+```
+
+The plugin auto-registers via Laravel package discovery. To publish the
+config:
+
+```bash
+php artisan vendor:publish --tag=jobs-config
+```
+
+## Documentation
+
+- [Getting started](docs/en/getting-started.md)
+- [Usage](docs/en/usage.md)
+
+## License
+
+[MIT](LICENSE) © Denis Skripchenko
