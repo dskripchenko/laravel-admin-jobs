@@ -1,6 +1,6 @@
 {
     "name": "dskripchenko/laravel-admin-jobs",
-    "description": "Failed jobs / batches / queue depth viewer для dskripchenko/laravel-admin.",
+    "description": "Failed jobs, batches and queue-depth viewer for dskripchenko/laravel-admin.",
     "type": "library",
     "keywords": [
         "laravel",
