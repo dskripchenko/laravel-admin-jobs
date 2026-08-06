@@ -1,6 +1,6 @@
 # dskripchenko/laravel-admin-jobs
 
-> 🌐 **English** · [Русский](README.ru.md) · [Deutsch](README.de.md) · [中文](README.zh.md)
+> 🌐 **English** · [Русский](docs/ru/README.md) · [Deutsch](docs/de/README.md) · [中文](docs/zh/README.md)
 
 Viewer for Laravel queues: failed jobs, batches, queue depth. Lightweight, no dashboard server.
 

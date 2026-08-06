@@ -1,6 +1,6 @@
 # dskripchenko/laravel-admin-jobs
 
-> 🌐 [English](README.md) · [Русский](README.ru.md) · **Deutsch** · [中文](README.zh.md)
+> 🌐 [English](../../README.md) · [Русский](../ru/README.md) · **Deutsch** · [中文](../zh/README.md)
 
 Viewer für Laravel-Queues: Failed Jobs, Batches, Queue-Tiefe. Leichtgewichtig, kein Dashboard-Server.
 
@@ -17,9 +17,9 @@ Das Plugin registriert sich automatisch über Laravel Package Discovery.
 
 ## Dokumentation
 
-- [Erste Schritte](docs/en/getting-started.md) (en)
-- [Verwendung](docs/en/usage.md) (en)
+- [Erste Schritte](../../docs/en/getting-started.md) (en)
+- [Verwendung](../../docs/en/usage.md) (en)
 
 ## Lizenz
 
-[MIT](LICENSE) © Denis Skripchenko
+[MIT](../../LICENSE) © Denis Skripchenko
