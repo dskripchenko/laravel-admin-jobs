@@ -5,22 +5,22 @@ declare(strict_types=1);
 return [
     /*
     |--------------------------------------------------------------------------
-    | Очереди для мониторинга
+    | The queues to monitor
     |--------------------------------------------------------------------------
-    | Список имён очередей для QueueDepthWidget. Должны существовать в queue
-    | driver host-проекта. Пустой = автоопределение через `Queue::getNames()`
-    | (если поддерживается driver'ом).
+    | The list of queue names for QueueDepthWidget. They must exist in the host
+    | project's queue driver. Empty means autodetection through
+    | `Queue::getNames()` (when the driver supports it).
     */
 
     'queues_to_monitor' => ['default'],
 
     /*
     |--------------------------------------------------------------------------
-    | Показывать резерв очереди (queued jobs)
+    | Whether to show the queue's backlog (the queued jobs)
     |--------------------------------------------------------------------------
-    | true только для DB queue-driver (`jobs`-таблица). Для Redis/SQS — не
-    | работает (driver не предоставляет per-job listing). Для DB-driver
-    | даёт `QueuedJobResource` со списком pending-задач.
+    | true only for the DB queue driver (the `jobs` table). It does not work
+    | for Redis/SQS (those drivers provide no per-job listing). For the DB
+    | driver it gives a `QueuedJobResource` with the list of pending jobs.
     */
 
     'show_queued' => env('ADMIN_JOBS_SHOW_QUEUED', false),
@@ -29,8 +29,9 @@ return [
     |--------------------------------------------------------------------------
     | Notification on failed job
     |--------------------------------------------------------------------------
-    | Listener на стандартный Laravel-event JobFailed (см. AdminJobsPlugin).
-    | Шлёт notification в admin notification-center при появлении failed-job.
+    | A listener on Laravel's standard JobFailed event (see AdminJobsPlugin).
+    | It sends a notification to the admin notification centre when a failed job
+    | shows up.
     */
 
     'notification' => [
@@ -41,10 +42,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Truncate payload в collapsed-view
+    | Truncating the payload in the collapsed view
     |--------------------------------------------------------------------------
-    | Длина в символах для preview-rendering payload/exception в таблице.
-    | Full payload viewer'ом доступен на view-странице.
+    | The length in characters for rendering a preview of the payload or the
+    | exception in the table. The full payload is available through the viewer
+    | on the view page.
     */
 
     'payload_truncate' => 5000,

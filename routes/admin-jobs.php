@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | admin-jobs custom routes
 |--------------------------------------------------------------------------
-| Все защищены AdminAccess middleware с конкретным permission-ключом.
-| Подключаются service provider'ом в `boot()` под admin.api.prefix
-| (по умолчанию `/api/admin`).
+| All of them are protected by the AdminAccess middleware with a specific
+| permission key. They are wired in by the service provider in `boot()` under
+| admin.api.prefix (`/api/admin` by default).
 */
 
 $apiPrefix = (string) config('admin.api.prefix', 'api/admin');
