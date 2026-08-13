@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Eloquent-обёртка над таблицей Laravel `job_batches` (Bus::batch).
+ * An Eloquent wrapper over Laravel's `job_batches` table (Bus::batch).
  *
  * @property string $id
  * @property string $name
@@ -45,7 +45,7 @@ final class JobBatch extends Model
     ];
 
     /**
-     * Сколько job'ов уже обработано (success или failed).
+     * How many jobs have already been processed (successfully or not).
      */
     protected function processedJobs(): Attribute
     {
@@ -55,7 +55,7 @@ final class JobBatch extends Model
     }
 
     /**
-     * Процент прогресса (0..100). Если total=0 — 0.
+     * The progress percentage (0..100). When total=0 it is 0.
      */
     protected function progressPct(): Attribute
     {
@@ -70,7 +70,7 @@ final class JobBatch extends Model
     }
 
     /**
-     * Состояние ('running' | 'cancelled' | 'finished' | 'finished_with_failures').
+     * The state ('running' | 'cancelled' | 'finished' | 'finished_with_failures').
      */
     public function status(): string
     {

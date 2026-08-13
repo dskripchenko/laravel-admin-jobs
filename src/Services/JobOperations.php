@@ -10,17 +10,17 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Сервис, инкапсулирующий операции над failed-jobs и batches.
+ * The service encapsulating the operations over failed jobs and batches.
  *
- * Использует Laravel Artisan-команды для retry (там сложная логика
- * unserialize + dispatch), и DB-уровневые операции для forget — это
- * единственная гарантия не сломать invariants.
+ * It uses Laravel's artisan commands for the retries (the unserialize plus
+ * dispatch logic there is involved) and database-level operations for the
+ * forgets — the only way to be sure the invariants stay intact.
  */
 final class JobOperations
 {
     /**
-     * Re-enqueue одного failed-job по UUID. Internally вызывает
-     * `queue:retry {uuid}`, который соберёт payload и запустит снова.
+     * Re-enqueue a single failed job by UUID. Internally it calls
+     * `queue:retry {uuid}`, which assembles the payload and runs it again.
      */
     public function retryFailedJob(string $uuid): bool
     {
@@ -30,7 +30,7 @@ final class JobOperations
     }
 
     /**
-     * Bulk-retry. Возвращает кол-во успешно re-enqueued jobs.
+     * A bulk retry. Returns the number of jobs successfully re-enqueued.
      *
      * @param  list<string>  $uuids
      */
@@ -45,7 +45,7 @@ final class JobOperations
     }
 
     /**
-     * Удалить запись из failed_jobs (но не re-enqueue).
+     * Delete the row from failed_jobs (without re-enqueueing it).
      */
     public function forgetFailedJob(string $uuid): bool
     {
@@ -67,9 +67,9 @@ final class JobOperations
     }
 
     /**
-     * Cancel batch (через Bus::findBatch + cancel). Pending-jobs
-     * останутся в очереди, но при выполнении проверят `$batch->cancelled()`
-     * и не будут run'нуть logic.
+     * Cancel a batch (through Bus::findBatch plus cancel). The pending jobs
+     * stay in the queue, but when they run they check `$batch->cancelled()` and
+     * do not execute their logic.
      */
     public function cancelBatch(string $batchId): bool
     {
@@ -84,7 +84,7 @@ final class JobOperations
     }
 
     /**
-     * Re-enqueue все failed-jobs из batch'а через `queue:retry-batch {id}`.
+     * Re-enqueue every failed job of a batch through `queue:retry-batch {id}`.
      */
     public function retryBatchFailures(string $batchId): bool
     {

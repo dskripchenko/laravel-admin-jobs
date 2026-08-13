@@ -11,11 +11,12 @@ use Dskripchenko\LaravelAdminJobs\Resources\FailedJobResource;
 use Dskripchenko\LaravelAdminJobs\Resources\JobBatchResource;
 
 /**
- * AdminPlugin для регистрации failed-jobs / batches Resource'ов и
- * их permission-групп.
+ * An admin plugin registering the failed-jobs and batches resources together
+ * with their permission groups.
  *
- * Подключается host-проектом через `Admin::plugins([AdminJobsPlugin::class])`
- * либо ставится в `config/admin.php`'s `plugins[]`.
+ * A host project wires it in through
+ * `Admin::plugins([AdminJobsPlugin::class])` or puts it into `plugins[]` of
+ * `config/admin.php`.
  */
 final class AdminJobsPlugin implements AdminPlugin
 {
@@ -31,7 +32,7 @@ final class AdminJobsPlugin implements AdminPlugin
 
     public function register(): void
     {
-        // No-op — service-bindings регистрируются service provider'ом.
+        // A no-op — the service bindings are registered by the service provider.
     }
 
     public function boot(Admin $admin): void

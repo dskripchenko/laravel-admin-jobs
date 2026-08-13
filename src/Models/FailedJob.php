@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Eloquent-обёртка над стандартной таблицей Laravel `failed_jobs`.
+ * An Eloquent wrapper over Laravel's standard `failed_jobs` table.
  *
- * Не имеет собственной миграции — использует существующую.
+ * It has no migration of its own — it uses the existing table.
  *
  * @property int $id
  * @property string $uuid
@@ -21,8 +21,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon $failed_at
  * @property-read string $exception_class
  * @property-read string $exception_message
- * @property-read string $exception_fingerprint  Hash первых строк exception
- *                                               для группировки одинаковых fail'ов.
+ * @property-read string $exception_fingerprint  A hash of the exception's first
+ *                                               lines, for grouping identical
+ *                                               failures.
  */
 final class FailedJob extends Model
 {
@@ -37,7 +38,7 @@ final class FailedJob extends Model
     ];
 
     /**
-     * Имя класса исключения (первая строка exception до ': ').
+     * The exception's class name (the first line of the exception up to ': ').
      */
     protected function exceptionClass(): Attribute
     {
@@ -53,7 +54,7 @@ final class FailedJob extends Model
     }
 
     /**
-     * Сообщение исключения (без stack trace).
+     * The exception's message (without the stack trace).
      */
     protected function exceptionMessage(): Attribute
     {
@@ -69,8 +70,8 @@ final class FailedJob extends Model
     }
 
     /**
-     * Hash от первых N строк exception — для группировки одинаковых fail'ов
-     * (rate-limit notifications, find-similar в UI).
+     * A hash of the exception's first N lines — for grouping identical failures
+     * (rate-limiting the notifications, find-similar in the UI).
      */
     protected function exceptionFingerprint(): Attribute
     {
@@ -83,7 +84,7 @@ final class FailedJob extends Model
     }
 
     /**
-     * Декодированный payload (без выкачивания всего blob'а в свойство).
+     * The decoded payload (without pulling the whole blob into a property).
      *
      * @return array<string, mixed>
      */
@@ -95,7 +96,7 @@ final class FailedJob extends Model
     }
 
     /**
-     * Имя класса самого job'а (из payload['displayName']).
+     * The job's own class name (from payload['displayName']).
      */
     public function jobName(): string
     {

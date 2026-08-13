@@ -10,18 +10,18 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Custom routes для retry/forget failed-jobs.
+ * The custom routes for retrying and forgetting failed jobs.
  *
- * Endpoint'ы регистрируются в AdminJobsServiceProvider::boot() и
- * прикрыты `AdminAccess::class.':admin.system.jobs.failed.{action}'`
- * middleware'ом.
+ * The endpoints are registered in AdminJobsServiceProvider::boot() and are
+ * covered by the `AdminAccess::class.':admin.system.jobs.failed.{action}'`
+ * middleware.
  */
 final class FailedJobController extends ApiController
 {
     public function __construct(private readonly JobOperations $ops) {}
 
     /**
-     * @input string $uuid UUID failed-job'а.
+     * @input string $uuid The failed job's UUID.
      *
      * @output object $payload
      * @output bool $payload.success

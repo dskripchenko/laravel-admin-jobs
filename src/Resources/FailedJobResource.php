@@ -15,15 +15,16 @@ use Dskripchenko\LaravelAdminJobs\Models\FailedJob;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Resource для просмотра / retry / forget failed-jobs.
+ * A resource for viewing, retrying and forgetting failed jobs.
  *
- * Read-only форма (нет fields()) — изменять failed_job не имеет смысла,
- * только retry либо forget. Поэтому view + actions, без create/update.
+ * The form is read-only (there is no fields()) — editing a failed_job makes no
+ * sense, only retrying or forgetting it does. Hence view plus actions, without
+ * create/update.
  *
  * Permissions:
- *   - admin.system.jobs.failed.view   — list + view
- *   - admin.system.jobs.failed.retry  — retry-action (single + bulk)
- *   - admin.system.jobs.failed.forget — forget-action (single + bulk)
+ *   - admin.system.jobs.failed.view   — list plus view
+ *   - admin.system.jobs.failed.retry  — the retry action (single and bulk)
+ *   - admin.system.jobs.failed.forget — the forget action (single and bulk)
  */
 final class FailedJobResource extends Resource
 {
@@ -110,8 +111,8 @@ final class FailedJobResource extends Resource
 
     public function searchableFields(): array
     {
-        // Поиск через подстроку — exception хранится как строка blob'а,
-        // делаем LIKE по нему + queue/connection.
+        // The search goes by substring — the exception is stored as a blob
+        // string, so we LIKE over it plus queue/connection.
         return ['exception', 'queue', 'connection', 'uuid'];
     }
 

@@ -12,7 +12,7 @@ use Dskripchenko\LaravelAdminJobs\Models\JobBatch;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Resource для просмотра Bus::batch().
+ * A resource for browsing Bus::batch() batches.
  *
  * Permissions:
  *   - admin.system.jobs.batches.view

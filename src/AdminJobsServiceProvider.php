@@ -9,7 +9,8 @@ use Dskripchenko\LaravelAdminJobs\Services\JobOperations;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Service provider пакета. Auto-discovery через `extra.laravel.providers`.
+ * The package's service provider. Auto-discovered through
+ * `extra.laravel.providers`.
  */
 final class AdminJobsServiceProvider extends ServiceProvider
 {

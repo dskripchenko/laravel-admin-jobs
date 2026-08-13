@@ -10,7 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Custom routes для cancel/retry-failed по batch'ам Bus::batch().
+ * The custom routes for cancelling and retrying the failed jobs of
+ * Bus::batch() batches.
  */
 final class JobBatchController extends ApiController
 {
