@@ -9,6 +9,7 @@ use Dskripchenko\LaravelAdmin\Permission\ItemPermission;
 use Dskripchenko\LaravelAdmin\Plugin\AdminPlugin;
 use Dskripchenko\LaravelAdminJobs\Resources\FailedJobResource;
 use Dskripchenko\LaravelAdminJobs\Resources\JobBatchResource;
+use Dskripchenko\LaravelAdminJobs\Widgets\QueueDepthWidget;
 
 /**
  * An admin plugin registering the failed-jobs and batches resources together
@@ -41,6 +42,11 @@ final class AdminJobsPlugin implements AdminPlugin
             FailedJobResource::class,
             JobBatchResource::class,
         ]);
+
+        // The widget is registered, not placed: which queues a host has and
+        // whether the depth belongs on its dashboard is the host's call. It
+        // adds it to a dashboard through `QueueDepthWidget::make()->queues([...])`.
+        $admin->widgets([QueueDepthWidget::class]);
 
         $admin->permissions(
             ItemPermission::group('Системные')

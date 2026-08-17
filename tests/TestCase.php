@@ -32,6 +32,18 @@ abstract class TestCase extends PackageTestCase
             $table->timestamp('failed_at')->useCurrent();
         });
 
+        // The `jobs` table: the queue-depth widget counts what is waiting, and
+        // for the `database` driver "waiting" is a row here.
+        Schema::create('jobs', function ($table): void {
+            $table->id();
+            $table->string('queue')->index();
+            $table->longText('payload');
+            $table->unsignedTinyInteger('attempts');
+            $table->unsignedInteger('reserved_at')->nullable();
+            $table->unsignedInteger('available_at');
+            $table->unsignedInteger('created_at');
+        });
+
         Schema::create('job_batches', function ($table): void {
             $table->string('id')->primary();
             $table->string('name');

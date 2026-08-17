@@ -23,6 +23,25 @@ config:
 php artisan vendor:publish --tag=jobs-config
 ```
 
+## Глубина очереди на дашборде
+
+Два списка — упавшие задачи и батчи — описывают прошлое. Число, на которое
+смотрят каждый день, другое: сколько ждёт прямо сейчас. Виджет
+`QueueDepthWidget` показывает его рядом с количеством упавших.
+
+```php
+use Dskripchenko\LaravelAdminJobs\Widgets\QueueDepthWidget;
+
+(new QueueDepthWidget)
+    ->title('Очереди')->size(4)
+    ->queues(['default', 'render', 'notify']);
+```
+
+Имена очередей — ваши: пакет не может знать, что документы идут в `render`, а
+письма в `notify`. Драйвер, который посчитать нельзя (`sync`, `null`), не
+показывается вовсе — ноль читался бы как «очередь пуста», а правда в том, что
+очереди здесь нет.
+
 ## Documentation
 
 - [Getting started](docs/en/getting-started.md)
