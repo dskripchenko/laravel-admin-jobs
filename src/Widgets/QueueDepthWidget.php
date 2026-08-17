@@ -29,6 +29,14 @@ class QueueDepthWidget extends StatsOverviewWidget
 
     private ?string $connection = null;
 
+    public function __construct()
+    {
+        // The widget lands on a dashboard it does not own, next to numbers
+        // about something else entirely — without a title the counts are
+        // anonymous.
+        $this->title(__('Очереди'))->size(4);
+    }
+
     public static function slug(): string
     {
         return 'admin.jobs.queue-depth';
