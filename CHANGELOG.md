@@ -8,7 +8,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 Entries for releases published before this file existed were reconstructed from
 the tagged commit history.
 
-## [Unreleased]
+## [1.4.1] — 2026-10-01
 
 ### Added
 - English translations of the pack's user-facing strings (`resources/lang/en.json`),
