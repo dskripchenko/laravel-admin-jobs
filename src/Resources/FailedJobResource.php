@@ -65,7 +65,7 @@ final class FailedJobResource extends Resource
                 ->search()
                 ->width('260px'),
             TableColumn::make('exception_message')
-                ->label('Сообщение')
+                ->label(__('Сообщение'))
                 ->search(),
             TableColumn::make('failed_at')->sort()->asDateTime(),
         ];
@@ -78,9 +78,9 @@ final class FailedJobResource extends Resource
             InputFilter::for('queue')->label('Queue'),
             InputFilter::for('exception')
                 ->label('Exception (substring)'),
-            DateRangeFilter::for('failed_at')->label('Период падений'),
+            DateRangeFilter::for('failed_at')->label(__('Период падений')),
             OptionsFilter::for('exception_class_group')
-                ->label('Группа exception'),
+                ->label(__('Группа exception')),
         ];
     }
 
@@ -90,12 +90,12 @@ final class FailedJobResource extends Resource
             Button::make('Retry')
                 ->method('retry')
                 ->permission('admin.system.jobs.failed.retry')
-                ->confirm('Перезапустить упавший job?'),
+                ->confirm(__('Перезапустить упавший job?')),
 
             Button::make('Forget')
                 ->method('forget')
                 ->permission('admin.system.jobs.failed.forget')
-                ->confirm('Удалить запись из failed_jobs? Job не будет перезапущен.'),
+                ->confirm(__('Удалить запись из failed_jobs? Job не будет перезапущен.')),
 
             BulkAction::make('Retry batch')
                 ->method('retryBatch')
