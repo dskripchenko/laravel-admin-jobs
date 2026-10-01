@@ -61,7 +61,7 @@ final class JobBatchResource extends Resource
     public function filters(): array
     {
         return [
-            InputFilter::for('name')->label('Имя batch'),
+            InputFilter::for('name')->label(__('Имя batch')),
         ];
     }
 
@@ -71,12 +71,12 @@ final class JobBatchResource extends Resource
             Button::make('Cancel batch')
                 ->method('cancel')
                 ->permission('admin.system.jobs.batches.manage')
-                ->confirm('Отменить batch? Pending-jobs не будут выполнены.'),
+                ->confirm(__('Отменить batch? Pending-jobs не будут выполнены.')),
 
             Button::make('Retry failed')
                 ->method('retryFailed')
                 ->permission('admin.system.jobs.batches.manage')
-                ->confirm('Перезапустить упавшие job\'ы внутри batch?'),
+                ->confirm(__('Перезапустить упавшие job\'ы внутри batch?')),
         ];
     }
 

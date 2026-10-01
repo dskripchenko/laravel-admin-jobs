@@ -8,6 +8,20 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 Entries for releases published before this file existed were reconstructed from
 the tagged commit history.
 
+## [1.4.1] — 2026-10-01
+
+### Added
+- English translations of the pack's user-facing strings (`resources/lang/en.json`),
+  loaded as JSON translations; the Russian source text stays the key.
+- Weekly scheduled CI run, so the support matrix is re-checked against new
+  upstream releases even without commits.
+
+### Fixed
+- `AdminJobsPlugin::version()` reports the installed package version instead of
+  a hardcoded `0.1.0` (falls back to `dev` when it cannot be resolved).
+- The config publish tag in the docs is `admin-jobs-config`, matching the one the
+  service provider registers (the docs said `jobs-config`).
+
 ## [v1.4.0] - 2026-08-17
 
 ### Added

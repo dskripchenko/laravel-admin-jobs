@@ -19,7 +19,7 @@ php artisan migrate
 ## Configure
 
 ```bash
-php artisan vendor:publish --tag=jobs-config
+php artisan vendor:publish --tag=admin-jobs-config
 ```
 
 Edit `config/jobs.php`.

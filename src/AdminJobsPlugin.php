@@ -28,7 +28,9 @@ final class AdminJobsPlugin implements AdminPlugin
 
     public function version(): string
     {
-        return '0.1.0';
+        return \Composer\InstalledVersions::isInstalled('dskripchenko/laravel-admin-jobs')
+            ? (\Composer\InstalledVersions::getPrettyVersion('dskripchenko/laravel-admin-jobs') ?? 'dev')
+            : 'dev';
     }
 
     public function register(): void
@@ -49,11 +51,11 @@ final class AdminJobsPlugin implements AdminPlugin
         $admin->widgets([QueueDepthWidget::class]);
 
         $admin->permissions(
-            ItemPermission::group('Системные')
-                ->addPermission('admin.system.jobs.failed.view', 'Failed jobs: просмотр')
+            ItemPermission::group(__('Системные'))
+                ->addPermission('admin.system.jobs.failed.view', __('Failed jobs: просмотр'))
                 ->addPermission('admin.system.jobs.failed.retry', 'Failed jobs: retry')
                 ->addPermission('admin.system.jobs.failed.forget', 'Failed jobs: forget')
-                ->addPermission('admin.system.jobs.batches.view', 'Batches: просмотр')
+                ->addPermission('admin.system.jobs.batches.view', __('Batches: просмотр'))
                 ->addPermission('admin.system.jobs.batches.manage', 'Batches: cancel/retry'),
         );
     }

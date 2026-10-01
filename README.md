@@ -20,7 +20,7 @@ The plugin auto-registers via Laravel package discovery. To publish the
 config:
 
 ```bash
-php artisan vendor:publish --tag=jobs-config
+php artisan vendor:publish --tag=admin-jobs-config
 ```
 
 ## Глубина очереди на дашборде

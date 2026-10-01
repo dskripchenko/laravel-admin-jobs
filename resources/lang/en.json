@@ -1,0 +1,15 @@
+{
+    "Batches: просмотр": "Batches: view",
+    "Failed jobs: просмотр": "Failed jobs: view",
+    "Группа exception": "Exception group",
+    "Имя batch": "Batch name",
+    "Отменить batch? Pending-jobs не будут выполнены.": "Cancel the batch? Pending jobs will not be run.",
+    "Очереди": "Queues",
+    "Период падений": "Failure period",
+    "Перезапустить упавшие job'ы внутри batch?": "Retry the failed jobs in this batch?",
+    "Перезапустить упавший job?": "Retry the failed job?",
+    "Системные": "System",
+    "Сообщение": "Message",
+    "Удалить запись из failed_jobs? Job не будет перезапущен.": "Delete the record from failed_jobs? The job will not be retried.",
+    "упало": "failed"
+}
