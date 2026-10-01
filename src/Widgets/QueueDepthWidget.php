@@ -24,6 +24,12 @@ use Illuminate\Support\Facades\Queue;
  */
 class QueueDepthWidget extends StatsOverviewWidget
 {
+    /**
+     * Seen only by those who may view what it summarises; a host can widen
+     * or narrow it with ->permission().
+     */
+    protected array|string|null $permission = 'admin.system.jobs.failed.view';
+
     /** @var list<string> */
     private array $queues = ['default'];
 
