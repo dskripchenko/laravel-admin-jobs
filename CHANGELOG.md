@@ -8,6 +8,53 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 Entries for releases published before this file existed were reconstructed from
 the tagged commit history.
 
+## [Unreleased]
+
+### Fixed
+- Every action of the failed jobs and batches sections answered 501 "Method
+  `retry` not found on resource": the buttons go through core's `action`
+  endpoint, which calls a method of the resource, and the resources had none.
+  `retry`, `forget`, `retryBatch`, `forgetBatch` (failed jobs) and `cancel`,
+  `retryFailed` (batches) now run through `JobOperations` and answer with the
+  number of jobs or batches affected; a job somebody has already retried or
+  forgotten, a batch that is not running or has no failures is a refusal
+  (422), not an error.
+- A retry stopped at the first failed job whose model had been deleted since
+  it failed (`SerializesModels`): `queue:retry` unserializes each command, the
+  ModelNotFoundException aborted the command, a single retry answered 500 and
+  a bulk retry left the rest of the list untouched while reporting all of them
+  retried. `JobOperations::retry()` (new, with `retryBatch()`) retries the jobs
+  one by one and returns a `RetryResult` — the uuids pushed back and, for the
+  others, the reason ("the job's model no longer exists"). The actions report
+  a partial result, or refuse when nothing could be retried; the `retry-batch`
+  and batch `retry-failed` routes add `count` and `failed` (uuid => reason) to
+  their payload, `retry` adds `reason`. `retryFailedJobs()` returns the jobs
+  actually retried, not the number asked for.
+- The failed jobs list showed "—" in the Exception and Message columns: the
+  accessors were not serialized. They are appended now, with a new `job_class`
+  column — the job itself, which the list did not show at all.
+- The failed job's page used the whole exception text, stack trace included,
+  as its title. The title is the job's class, the subtitle the exception's,
+  and the page lists the job, queue, connection, uuid, time and exception,
+  then the stack trace and the payload (pretty-printed) as code blocks; the
+  time is formatted as in the list.
+- The Message column kept the " in /path/File.php:24" Laravel appends to the
+  first line of the stored exception; the file and line are left to the trace.
+- The "Exception group" filter had no options and filtered on a column that
+  does not exist (an SQL error on MySQL and PostgreSQL, an empty list on
+  SQLite). It is removed; "Exception (substring)" searches the exception text.
+- The batches list showed "—" in the Progress column (not serialized), and a
+  batch's state did not follow Laravel's counters: a batch that allows
+  failures and has run every job keeps a null `finished_at` while its failed
+  jobs wait (it read "running" forever), and a batch whose failures were
+  retried successfully read "finished with failures" (`failed_jobs` keeps the
+  historical count). The state now counts the outstanding failures
+  (`failed_job_ids`); the progress counts the jobs that have run, failed ones
+  included. Both are serialized (`progress_pct`, `state`), and the list has a
+  Status column.
+- "Forget" read "Delete" in English next to core's own Delete, while the bulk
+  action read "Forget selected": the source string was core's "Удалить".
+
 ## [1.4.4] — 2026-10-02
 
 ### Fixed

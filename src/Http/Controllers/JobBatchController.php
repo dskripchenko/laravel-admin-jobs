@@ -39,7 +39,9 @@ final class JobBatchController extends ApiController
      * @input string $id
      *
      * @output object $payload
-     * @output bool $payload.dispatched
+     * @output bool $payload.dispatched At least one failed job went back onto its queue.
+     * @output int $payload.count The jobs pushed back onto their queues.
+     * @output object $payload.failed The ones that could not be: uuid => reason.
      *
      * @security AdminSession
      *
@@ -48,8 +50,8 @@ final class JobBatchController extends ApiController
     public function retryFailed(Request $request): JsonResponse
     {
         $data = $request->validate(['id' => ['required', 'string']]);
-        $ok = $this->ops->retryBatchFailures($data['id']);
+        $result = $this->ops->retryBatch($data['id']);
 
-        return $this->success(['dispatched' => $ok]);
+        return $this->success(['dispatched' => $result->count() > 0, 'count' => $result->count(), 'failed' => (object) $result->failed]);
     }
 }

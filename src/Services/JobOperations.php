@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Dskripchenko\LaravelAdminJobs\Services;
 
 use Illuminate\Bus\Batch;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * The service encapsulating the operations over failed jobs and batches.
@@ -24,24 +26,60 @@ final class JobOperations
      */
     public function retryFailedJob(string $uuid): bool
     {
-        $exitCode = Artisan::call('queue:retry', ['id' => [$uuid]]);
-
-        return $exitCode === 0;
+        return $this->retry([$uuid])->count() === 1;
     }
 
     /**
-     * A bulk retry. Returns the number of jobs successfully re-enqueued.
+     * A bulk retry. Returns the number of jobs actually re-enqueued.
      *
      * @param  list<string>  $uuids
      */
     public function retryFailedJobs(array $uuids): int
     {
-        if ($uuids === []) {
-            return 0;
-        }
-        $exitCode = Artisan::call('queue:retry', ['id' => $uuids]);
+        return $this->retry($uuids)->count();
+    }
 
-        return $exitCode === 0 ? count($uuids) : 0;
+    /**
+     * Re-enqueue failed jobs one by one through `queue:retry`, and say which
+     * went back onto their queue and which could not.
+     *
+     * One at a time on purpose. `queue:retry` unserializes each job's command
+     * to refresh its retry deadline, and a job whose model has been deleted
+     * since (SerializesModels) throws from there — which aborts the whole
+     * command at that job, leaving the rest of the list untouched. Retried
+     * separately, that job is reported and the others still go.
+     *
+     * @param  list<string>  $uuids
+     */
+    public function retry(array $uuids): RetryResult
+    {
+        $failer = app('queue.failer');
+        $retried = [];
+        $failed = [];
+
+        foreach (array_values(array_unique($uuids)) as $uuid) {
+            if ($failer->find($uuid) === null) {
+                $failed[$uuid] = __('Упавшая задача не найдена: её уже перезапустили или забыли.');
+
+                continue;
+            }
+
+            try {
+                Artisan::call('queue:retry', ['id' => [$uuid]]);
+            } catch (Throwable $e) {
+                $failed[$uuid] = $e instanceof ModelNotFoundException
+                    ? __('Модель задачи больше не существует (:model).', ['model' => $e->getModel()])
+                    : $e->getMessage();
+
+                continue;
+            }
+
+            // The row existed and queue:retry did not throw: it pushed the
+            // job and forgot the row.
+            $retried[] = $uuid;
+        }
+
+        return new RetryResult($retried, $failed);
     }
 
     /**
@@ -84,12 +122,26 @@ final class JobOperations
     }
 
     /**
-     * Re-enqueue every failed job of a batch through `queue:retry-batch {id}`.
+     * Re-enqueue every failed job of a batch. True when at least one went
+     * back onto its queue.
      */
     public function retryBatchFailures(string $batchId): bool
     {
-        $exitCode = Artisan::call('queue:retry-batch', ['id' => $batchId]);
+        return $this->retryBatch($batchId)->count() > 0;
+    }
 
-        return $exitCode === 0;
+    /**
+     * Re-enqueue every failed job of a batch, one by one (see retry()):
+     * `queue:retry-batch` hands the whole list to `queue:retry` and stops at
+     * the first job that cannot be unserialized.
+     */
+    public function retryBatch(string $batchId): RetryResult
+    {
+        $batch = Bus::findBatch($batchId);
+        if (! $batch instanceof Batch) {
+            return new RetryResult;
+        }
+
+        return $this->retry(array_values(array_map('strval', $batch->failedJobIds)));
     }
 }
