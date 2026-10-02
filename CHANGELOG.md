@@ -8,6 +8,39 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 Entries for releases published before this file existed were reconstructed from
 the tagged commit history.
 
+## [Unreleased]
+
+### Fixed
+- Every action of the failed jobs and batches sections answered 501 "Method
+  `retry` not found on resource": the buttons go through core's `action`
+  endpoint, which calls a method of the resource, and the resources had none.
+  `retry`, `forget`, `retryBatch`, `forgetBatch` (failed jobs) and `cancel`,
+  `retryFailed` (batches) now run through `JobOperations` and answer with the
+  number of jobs or batches affected; a job somebody has already retried or
+  forgotten, a batch that is not running or has no failures is a refusal
+  (422), not an error.
+- The failed jobs list showed "—" in the Exception and Message columns: the
+  accessors were not serialized. They are appended now, with a new `job_class`
+  column — the job itself, which the list did not show at all.
+- The failed job's page used the whole exception text, stack trace included,
+  as its title. The title is the job's class, the subtitle the exception's,
+  and the page lists the job, queue, connection, uuid, time and exception,
+  then the stack trace and the payload as code blocks.
+- The "Exception group" filter had no options and filtered on a column that
+  does not exist (an SQL error on MySQL and PostgreSQL, an empty list on
+  SQLite). It is removed; "Exception (substring)" searches the exception text.
+- The batches list showed "—" in the Progress column (not serialized), and a
+  batch's state did not follow Laravel's counters: a batch that allows
+  failures and has run every job keeps a null `finished_at` while its failed
+  jobs wait (it read "running" forever), and a batch whose failures were
+  retried successfully read "finished with failures" (`failed_jobs` keeps the
+  historical count). The state now counts the outstanding failures
+  (`failed_job_ids`); the progress counts the jobs that have run, failed ones
+  included. Both are serialized (`progress_pct`, `state`), and the list has a
+  Status column.
+- "Forget" read "Delete" in English next to core's own Delete, while the bulk
+  action read "Forget selected": the source string was core's "Удалить".
+
 ## [1.4.4] — 2026-10-02
 
 ### Fixed

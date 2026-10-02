@@ -67,4 +67,16 @@ final class FailedJobModelTest extends TestCase
         ]);
         $this->assertSame('Unknown', $job->jobName());
     }
+
+    public function test_job_class_and_exception_parts_are_serialized(): void
+    {
+        $row = (new FailedJob([
+            'uuid' => 'a', 'connection' => 'r', 'queue' => 'q',
+            'payload' => '{"displayName":"App\\\\Jobs\\\\SendInvoice"}',
+            'exception' => "RuntimeException: SMTP is down\n#0 /app/A.php",
+        ]))->toArray();
+        $this->assertSame('App\\Jobs\\SendInvoice', $row['job_class']);
+        $this->assertSame('RuntimeException', $row['exception_class']);
+        $this->assertSame('SMTP is down', $row['exception_message']);
+    }
 }

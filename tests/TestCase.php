@@ -18,6 +18,11 @@ abstract class TestCase extends PackageTestCase
     protected function defineAdditionalEnvironment($app): void
     {
         $app['config']->set('queue.default', 'database');
+        // The failed-job provider and the batch repository use the test
+        // database, where the tables below are created.
+        $app['config']->set('queue.failed.driver', 'database-uuids');
+        $app['config']->set('queue.failed.database', $app['config']->get('database.default'));
+        $app['config']->set('queue.batching.database', $app['config']->get('database.default'));
     }
 
     protected function defineDatabaseMigrations(): void

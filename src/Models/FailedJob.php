@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read string $exception_fingerprint  A hash of the exception's first
  *                                               lines, for grouping identical
  *                                               failures.
+ * @property-read string $job_class  The job's class, from the payload.
  */
 final class FailedJob extends Model
 {
@@ -36,6 +37,14 @@ final class FailedJob extends Model
     protected $casts = [
         'failed_at' => 'datetime',
     ];
+
+    /**
+     * Sent with every row: the list shows the job and the exception's class
+     * and message, which live inside the payload and the exception blobs.
+     *
+     * @var list<string>
+     */
+    protected $appends = ['job_class', 'exception_class', 'exception_message'];
 
     /**
      * The exception's class name (the first line of the exception up to ': ').
@@ -103,5 +112,13 @@ final class FailedJob extends Model
         $p = $this->decodedPayload();
 
         return is_string($p['displayName'] ?? null) ? $p['displayName'] : 'Unknown';
+    }
+
+    /**
+     * The job's class as the `job_class` attribute, for the list and the view.
+     */
+    protected function jobClass(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->jobName());
     }
 }

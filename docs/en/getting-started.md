@@ -29,9 +29,11 @@ Edit `config/jobs.php`.
 
 Three resources rendered as tables:
 
-- **Failed jobs** `/admin/r/failed-jobs` — `failed_jobs` table viewer.
-  Action: retry / forget.
-- **Batches** `/admin/r/job-batches` — `job_batches` table viewer.
+- **Failed jobs** `/admin/r/system-failed-jobs` — the `failed_jobs` table: the
+  job, queue, exception class and message per row; the view shows the stack
+  trace and the payload. Actions: retry / forget, one or the selected.
+- **Batches** `/admin/r/system-job-batches` — the `job_batches` table with the
+  progress and the state of each batch. Actions: cancel, retry the failed jobs.
 - **Queue depth** dashboard — pending jobs per queue.
 
 Standard Laravel queue worker is required (`queue:work`).
