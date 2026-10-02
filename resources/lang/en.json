@@ -1,6 +1,9 @@
 {
     "Batches: просмотр": "Batches: view",
+    "Batches: отмена и перезапуск": "Batches: cancel/retry",
     "Failed jobs: просмотр": "Failed jobs: view",
+    "Failed jobs: перезапуск": "Failed jobs: retry",
+    "Failed jobs: удаление": "Failed jobs: forget",
     "Группа exception": "Exception group",
     "Имя batch": "Batch name",
     "Отменить batch? Pending-jobs не будут выполнены.": "Cancel the batch? Pending jobs will not be run.",

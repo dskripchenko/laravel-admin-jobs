@@ -24,10 +24,10 @@ final class AdminJobsServiceProvider extends ServiceProvider
 
         $this->registerAdminPlugin(AdminJobsPlugin::class);
 
-        // Registered here rather than in boot(): the core boots the plugins
-        // from its own boot(), which runs first, and the plugin translates its
-        // permission labels there. A JSON path added after the translator has
-        // already loaded a locale is never read for that locale.
+        // Registered here rather than in boot(): the translator caches a
+        // locale's JSON lines on first use, and anything that translates
+        // while the application boots would load them before this provider's
+        // boot() could add the path, so it would never be read.
         $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
     }
 

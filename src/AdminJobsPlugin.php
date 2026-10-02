@@ -50,13 +50,17 @@ final class AdminJobsPlugin implements AdminPlugin
         // adds it to a dashboard through `QueueDepthWidget::make()->queues([...])`.
         $admin->widgets([QueueDepthWidget::class]);
 
+        // Source strings, not __() results: the group is registered once at
+        // boot, and core translates it in the locale of each request. A name
+        // translated here would be frozen in the boot locale and split from
+        // the system group the other packs share.
         $admin->permissions(
-            ItemPermission::group(__('Системные'))
-                ->addPermission('admin.system.jobs.failed.view', __('Failed jobs: просмотр'))
-                ->addPermission('admin.system.jobs.failed.retry', 'Failed jobs: retry')
-                ->addPermission('admin.system.jobs.failed.forget', 'Failed jobs: forget')
-                ->addPermission('admin.system.jobs.batches.view', __('Batches: просмотр'))
-                ->addPermission('admin.system.jobs.batches.manage', 'Batches: cancel/retry'),
+            ItemPermission::group('Системные')
+                ->addPermission('admin.system.jobs.failed.view', 'Failed jobs: просмотр')
+                ->addPermission('admin.system.jobs.failed.retry', 'Failed jobs: перезапуск')
+                ->addPermission('admin.system.jobs.failed.forget', 'Failed jobs: удаление')
+                ->addPermission('admin.system.jobs.batches.view', 'Batches: просмотр')
+                ->addPermission('admin.system.jobs.batches.manage', 'Batches: отмена и перезапуск'),
         );
     }
 }
