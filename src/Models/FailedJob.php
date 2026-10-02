@@ -73,8 +73,13 @@ final class FailedJob extends Model
                 return '';
             }
             $colon = strpos($first, ': ');
+            if ($colon === false) {
+                return '';
+            }
 
-            return $colon === false ? '' : substr($first, $colon + 2);
+            // Laravel stores the exception as its string form, whose first
+            // line ends with " in /path/File.php:24"; the trace has the place.
+            return (string) preg_replace('/ in \S+:\d+$/', '', substr($first, $colon + 2));
         });
     }
 

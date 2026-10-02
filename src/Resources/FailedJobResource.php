@@ -223,12 +223,47 @@ final class FailedJobResource extends Resource
             TextEntry::make('queue')->label('Очередь'),
             TextEntry::make('connection')->label('Соединение'),
             TextEntry::make('uuid')->label('UUID')->copyable(),
-            TextEntry::make('failed_at')->label('Упало')->asDateTime(),
+            TextEntry::make('failed_at')->label('Упало')->preset('datetime', self::failedAtColumn()['meta'] ?? []),
             TextEntry::make('exception_class')->label('Исключение'),
             TextEntry::make('exception_message')->label('Сообщение'),
             FieldEntry::fromField(Code::make('exception')->title('Трассировка')->language('text')),
             FieldEntry::fromField(Code::make('payload')->title('Payload')->language('json')),
         ];
+    }
+
+    /**
+     * The list's `failed_at` column as serialized, so the view formats the
+     * time the way the list does.
+     *
+     * @return array<string, mixed>
+     */
+    private static function failedAtColumn(): array
+    {
+        foreach ((new self)->columns() as $column) {
+            $array = $column->toArray();
+            if (($array['name'] ?? null) === 'failed_at') {
+                return $array;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * The record for the view: the payload pretty-printed, so its code block
+     * reads as JSON rather than one escaped line.
+     *
+     * @return array<string, mixed>
+     */
+    public function transformRecord(Model $record): array
+    {
+        $data = parent::transformRecord($record);
+        $payload = json_decode((string) ($data['payload'] ?? ''), true);
+        if (is_array($payload)) {
+            $data['payload'] = (string) json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        return $data;
     }
 
     public function searchableFields(): array

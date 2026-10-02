@@ -36,7 +36,10 @@ the tagged commit history.
 - The failed job's page used the whole exception text, stack trace included,
   as its title. The title is the job's class, the subtitle the exception's,
   and the page lists the job, queue, connection, uuid, time and exception,
-  then the stack trace and the payload as code blocks.
+  then the stack trace and the payload (pretty-printed) as code blocks; the
+  time is formatted as in the list.
+- The Message column kept the " in /path/File.php:24" Laravel appends to the
+  first line of the stored exception; the file and line are left to the trace.
 - The "Exception group" filter had no options and filtered on a column that
   does not exist (an SQL error on MySQL and PostgreSQL, an empty list on
   SQLite). It is removed; "Exception (substring)" searches the exception text.

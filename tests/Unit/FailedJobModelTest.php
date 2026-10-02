@@ -79,4 +79,13 @@ final class FailedJobModelTest extends TestCase
         $this->assertSame('RuntimeException', $row['exception_class']);
         $this->assertSame('SMTP is down', $row['exception_message']);
     }
+
+    public function test_the_message_leaves_the_file_and_line_to_the_trace(): void
+    {
+        $job = new FailedJob([
+            'uuid' => 'a', 'connection' => 'r', 'queue' => 'q', 'payload' => '{}',
+            'exception' => "Illuminate\\Queue\\MaxAttemptsExceededException: App\\Jobs\\X has been attempted too many times. in /app/vendor/laravel/framework/src/Illuminate/Queue/MaxAttemptsExceededException.php:24\nStack trace:\n#0 {main}",
+        ]);
+        $this->assertSame('App\\Jobs\\X has been attempted too many times.', $job->exception_message);
+    }
 }

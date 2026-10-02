@@ -51,4 +51,17 @@ final class FailedJobResourceTest extends TestCase
         $this->assertContains('Forget', $labels);
         $this->assertContains('Forget selected', $labels);
     }
+
+    public function test_the_view_formats_the_time_like_the_list_and_pretty_prints_the_payload(): void
+    {
+        $resource = new FailedJobResource;
+        $failedAt = collect($resource->infolist())->first(static fn ($e): bool => $e->name() === 'failed_at')->toArray();
+        $column = collect($resource->columns())->map(static fn ($c): array => $c->toArray())->firstWhere('name', 'failed_at');
+
+        $this->assertSame('datetime', $failedAt['attributes']['preset']);
+        $this->assertSame($column['meta'], $failedAt['attributes']['meta']);
+
+        $payload = $resource->transformRecord($this->row())['payload'];
+        $this->assertStringContainsString("\n    \"displayName\": \"App\\\\Jobs\\\\SendInvoice\"", $payload);
+    }
 }
