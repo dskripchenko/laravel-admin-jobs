@@ -16,7 +16,15 @@ Permissions:
 
 The actions call `queue:retry` / `queue:retry-batch` and `Bus::findBatch()->cancel()`:
 a retried job goes back to its own connection and queue, so a worker has to
-listen to that queue.
+listen to that queue. The jobs are retried one by one: a job that cannot be
+(its `SerializesModels` model has been deleted since it failed) is reported
+with the reason and stays in the list, and the others still go back.
+
+```php
+$result = app(JobOperations::class)->retry($uuids);
+$result->retried; // the uuids pushed back onto their queues
+$result->failed;  // uuid => why it could not be
+```
 
 A batch's state follows Laravel's counters rather than `finished_at` alone:
 a batch that allows failures and has run every job is "finished with

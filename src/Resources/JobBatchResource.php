@@ -11,6 +11,7 @@ use Dskripchenko\LaravelAdmin\Resource\Resource;
 use Dskripchenko\LaravelAdmin\Table\TableColumn;
 use Dskripchenko\LaravelAdminJobs\Models\JobBatch;
 use Dskripchenko\LaravelAdminJobs\Services\JobOperations;
+use Dskripchenko\LaravelAdminJobs\Services\RetryResult;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -139,18 +140,21 @@ final class JobBatchResource extends Resource
     public function retryFailed(array $ids, array $payload = []): array
     {
         $ops = app(JobOperations::class);
-        $jobs = 0;
+        $retried = [];
+        $failed = [];
         foreach ($this->batches($ids) as $batch) {
-            $outstanding = $batch->outstandingFailures();
-            if ($outstanding > 0 && $ops->retryBatchFailures((string) $batch->id)) {
-                $jobs += $outstanding;
+            if ($batch->outstandingFailures() === 0) {
+                continue;
             }
+            $result = $ops->retryBatch((string) $batch->id);
+            $retried = [...$retried, ...$result->retried];
+            $failed = [...$failed, ...$result->failed];
         }
-        if ($jobs === 0) {
+        if ($retried === [] && $failed === []) {
             throw new ActionFailedException(__('В этом batch нет упавших задач.'));
         }
 
-        return ['message' => __('Перезапущено задач: :count', ['count' => $jobs]), 'affected' => $jobs];
+        return FailedJobResource::retryOutcome(new RetryResult($retried, $failed));
     }
 
     /**

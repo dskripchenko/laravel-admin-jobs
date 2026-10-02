@@ -16,6 +16,7 @@ use Dskripchenko\LaravelAdmin\Resource\Resource;
 use Dskripchenko\LaravelAdmin\Table\TableColumn;
 use Dskripchenko\LaravelAdminJobs\Models\FailedJob;
 use Dskripchenko\LaravelAdminJobs\Services\JobOperations;
+use Dskripchenko\LaravelAdminJobs\Services\RetryResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -136,9 +137,7 @@ final class FailedJobResource extends Resource
      */
     public function retryBatch(array $ids, array $payload = []): array
     {
-        $count = app(JobOperations::class)->retryFailedJobs($this->uuids($ids));
-
-        return ['message' => __('Перезапущено задач: :count', ['count' => $count]), 'affected' => $count];
+        return self::retryOutcome(app(JobOperations::class)->retry($this->uuids($ids)));
     }
 
     /**
@@ -161,6 +160,27 @@ final class FailedJobResource extends Resource
         $count = app(JobOperations::class)->forgetFailedJobs($this->uuids($ids));
 
         return ['message' => __('Забыто задач: :count', ['count' => $count]), 'affected' => $count];
+    }
+
+    /**
+     * What a retry reports: how many went back onto their queues and, when
+     * some could not, why. Nothing retried at all is a refusal.
+     *
+     * @return array{message: string, affected: int}
+     */
+    public static function retryOutcome(RetryResult $result): array
+    {
+        $reasons = implode('; ', $result->reasons());
+        if ($result->count() === 0) {
+            throw new ActionFailedException($reasons !== '' ? $reasons : __('Нечего перезапускать.'));
+        }
+
+        $message = __('Перезапущено задач: :count', ['count' => $result->count()]);
+        if ($result->failed !== []) {
+            $message .= '. '.__('Не перезапущено: :count (:reasons)', ['count' => count($result->failed), 'reasons' => $reasons]);
+        }
+
+        return ['message' => $message, 'affected' => $result->count()];
     }
 
     /**

@@ -19,6 +19,17 @@ the tagged commit history.
   number of jobs or batches affected; a job somebody has already retried or
   forgotten, a batch that is not running or has no failures is a refusal
   (422), not an error.
+- A retry stopped at the first failed job whose model had been deleted since
+  it failed (`SerializesModels`): `queue:retry` unserializes each command, the
+  ModelNotFoundException aborted the command, a single retry answered 500 and
+  a bulk retry left the rest of the list untouched while reporting all of them
+  retried. `JobOperations::retry()` (new, with `retryBatch()`) retries the jobs
+  one by one and returns a `RetryResult` — the uuids pushed back and, for the
+  others, the reason ("the job's model no longer exists"). The actions report
+  a partial result, or refuse when nothing could be retried; the `retry-batch`
+  and batch `retry-failed` routes add `count` and `failed` (uuid => reason) to
+  their payload, `retry` adds `reason`. `retryFailedJobs()` returns the jobs
+  actually retried, not the number asked for.
 - The failed jobs list showed "—" in the Exception and Message columns: the
   accessors were not serialized. They are appended now, with a new `job_class`
   column — the job itself, which the list did not show at all.

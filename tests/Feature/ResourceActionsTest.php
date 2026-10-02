@@ -6,8 +6,11 @@ namespace Dskripchenko\LaravelAdminJobs\Tests\Feature;
 
 use Dskripchenko\LaravelAdmin\Testing\Concerns\ActsAsAdmin;
 use Dskripchenko\LaravelAdminJobs\Models\JobBatch;
+use Dskripchenko\LaravelAdminJobs\Tests\Fixtures\Invoice;
+use Dskripchenko\LaravelAdminJobs\Tests\Fixtures\SendInvoice;
 use Dskripchenko\LaravelAdminJobs\Tests\TestCase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -19,7 +22,21 @@ final class ResourceActionsTest extends TestCase
 {
     use ActsAsAdmin;
 
-    private function failedJob(string $queue = 'default'): int
+    /**
+     * A failed SendInvoice whose invoice has been deleted since: queue:retry
+     * unserializes the command and gets a ModelNotFoundException.
+     */
+    private function orphanedJob(): int
+    {
+        Schema::create('test_invoices', function ($table): void {
+            $table->id();
+            $table->timestamps();
+        });
+
+        return $this->failedJob(command: serialize(new SendInvoice((new Invoice)->forceFill(['id' => 404]))));
+    }
+
+    private function failedJob(string $queue = 'default', string $command = 'O:8:"stdClass":0:{}'): int
     {
         $uuid = (string) Str::uuid();
 
@@ -32,7 +49,7 @@ final class ResourceActionsTest extends TestCase
                 'displayName' => 'App\\Jobs\\SendInvoice',
                 'job' => 'Illuminate\\Queue\\CallQueuedHandler@call',
                 'maxTries' => null,
-                'data' => ['commandName' => 'App\\Jobs\\SendInvoice', 'command' => 'O:8:"stdClass":0:{}'],
+                'data' => ['commandName' => 'App\\Jobs\\SendInvoice', 'command' => $command],
             ], JSON_THROW_ON_ERROR),
             'exception' => "RuntimeException: SMTP is down\n#0 /app/Jobs/SendInvoice.php(12)",
             'failed_at' => now(),
@@ -106,6 +123,65 @@ final class ResourceActionsTest extends TestCase
         $this->postJson('/api/admin/system-failed-jobs/action', ['key' => 'retry', 'ids' => [999]])
             ->assertStatus(422)
             ->assertJsonPath('payload.errorKey', 'action_failed');
+    }
+
+    public function test_a_job_whose_model_is_gone_is_a_refusal_with_the_reason(): void
+    {
+        $this->actingAsSuperAdmin();
+        $id = $this->orphanedJob();
+
+        $this->postJson('/api/admin/system-failed-jobs/action', ['key' => 'retry', 'ids' => [$id]])
+            ->assertStatus(422)
+            ->assertJsonPath('payload.errorKey', 'action_failed')
+            ->assertJsonPath('payload.message', 'The job\'s model no longer exists ('.Invoice::class.').');
+
+        $this->assertSame(1, DB::table('failed_jobs')->count());
+    }
+
+    public function test_bulk_retry_goes_on_past_a_job_whose_model_is_gone(): void
+    {
+        $this->actingAsSuperAdmin();
+        $orphan = $this->orphanedJob();
+        $good = $this->failedJob();
+
+        $message = $this->postJson('/api/admin/system-failed-jobs/action', ['key' => 'retry_batch', 'ids' => [$orphan, $good]])
+            ->assertOk()
+            ->assertJsonPath('payload.affected', 1)
+            ->json('payload.message');
+
+        $this->assertStringContainsString('Not retried: 1', (string) $message);
+        $this->assertSame([$orphan], DB::table('failed_jobs')->pluck('id')->map(fn ($v) => (int) $v)->all());
+        $this->assertSame(1, DB::table('jobs')->count());
+    }
+
+    public function test_the_retry_routes_report_what_could_not_be_retried(): void
+    {
+        $this->actingAsSuperAdmin();
+        $orphan = (string) DB::table('failed_jobs')->where('id', $this->orphanedJob())->value('uuid');
+        $good = (string) DB::table('failed_jobs')->where('id', $this->failedJob())->value('uuid');
+
+        $this->postJson('/api/admin/system/jobs/failed/retry-batch', ['uuids' => [$orphan, $good]])
+            ->assertOk()
+            ->assertJsonPath('payload.count', 1)
+            ->assertJsonPath('payload.failed.'.$orphan, 'The job\'s model no longer exists ('.Invoice::class.').');
+        // laravel-api lifts a `success` key of the payload to the envelope.
+        $this->postJson('/api/admin/system/jobs/failed/retry', ['uuid' => $orphan])
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('payload.reason', 'The job\'s model no longer exists ('.Invoice::class.').');
+    }
+
+    public function test_retry_the_failures_of_a_batch_past_a_job_whose_model_is_gone(): void
+    {
+        $this->actingAsSuperAdmin();
+        $orphan = (string) DB::table('failed_jobs')->where('id', $this->orphanedJob())->value('uuid');
+        $good = (string) DB::table('failed_jobs')->where('id', $this->failedJob())->value('uuid');
+        $id = $this->batch(10, 2, [$orphan, $good]);
+
+        $this->postJson('/api/admin/system-job-batches/action', ['key' => 'retry_failed', 'ids' => [$id]])
+            ->assertOk()->assertJsonPath('payload.affected', 1);
+
+        $this->assertSame(1, DB::table('failed_jobs')->count());
+        $this->assertSame(1, DB::table('jobs')->count());
     }
 
     public function test_cancel_a_running_batch(): void
