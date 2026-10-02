@@ -55,6 +55,15 @@ final class FailedJobResource extends Resource
         return __('Упавшие задачи');
     }
 
+    /**
+     * One record's name, for the panel's titles, confirmations and toasts
+     * ("Create failed job"). A core without singularLabel() ignores it.
+     */
+    public static function singularLabel(): string
+    {
+        return __('упавшая задача');
+    }
+
     public function columns(): array
     {
         return [

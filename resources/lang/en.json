@@ -49,5 +49,7 @@
     "Упавшие задачи": "Failed jobs",
     "Упавшие задачи не найдены: их уже перезапустили или забыли.": "The failed jobs are gone: someone has already retried or forgotten them.",
     "Упало": "Failed",
+    "пакет задач": "job batch",
+    "упавшая задача": "failed job",
     "упало": "failed"
 }

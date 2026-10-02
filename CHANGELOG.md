@@ -8,6 +8,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 Entries for releases published before this file existed were reconstructed from
 the tagged commit history.
 
+## [Unreleased]
+
+### Added
+
+- `singularLabel()` on the pack's resources ("job batch", "failed job", with Russian source
+  strings and English translations), so a laravel-admin core that supports
+  it titles their pages "Create job batch" instead of gluing the plural
+  label. An older core ignores the method; the core constraint is unchanged.
+
 ## [1.5.0] — 2026-10-02
 
 ### Fixed
