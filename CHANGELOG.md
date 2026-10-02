@@ -8,6 +8,19 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 Entries for releases published before this file existed were reconstructed from
 the tagged commit history.
 
+## [Unreleased]
+
+### Fixed
+- The failed jobs and batches sections were English in a Russian panel: their
+  titles ("Failed jobs", "Batch jobs"), several column and filter labels
+  ("Exception", "Connection", "Queue", "Progress") and the actions ("Retry",
+  "Forget", "Cancel batch"…) were English source strings, and the other
+  columns had headers made from their names ("Failed at", "Total jobs"). They
+  are Russian source strings now, translated per request; the actions keep
+  their names (`retry`, `forget`, `retry_batch`, `forget_batch`,
+  `cancel_batch`, `retry_failed`). The queue widget passes its title as a
+  source string, so core translates it in the reader's locale.
+
 ## [1.4.3] — 2026-10-02
 
 ### Fixed

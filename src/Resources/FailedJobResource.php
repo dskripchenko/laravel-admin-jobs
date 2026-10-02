@@ -46,38 +46,40 @@ final class FailedJobResource extends Resource
 
     public static function label(): string
     {
-        return 'Failed jobs';
+        return __('Упавшие задачи');
     }
 
     public function columns(): array
     {
         return [
-            TableColumn::make('id')->sort()->width('60px'),
-            TableColumn::make('uuid')->copyable()->width('260px'),
-            TableColumn::make('connection')->sort()->search(),
-            TableColumn::make('queue')->sort()->search()->asBadge([
+            // Every column carries a label: one made from the column name
+            // stays English in every panel language.
+            TableColumn::make('id')->label('ID')->sort()->width('60px'),
+            TableColumn::make('uuid')->label('UUID')->copyable()->width('260px'),
+            TableColumn::make('connection')->label('Соединение')->sort()->search(),
+            TableColumn::make('queue')->label('Очередь')->sort()->search()->asBadge([
                 'default' => 'default',
                 'high' => 'warning',
                 'low' => 'info',
             ]),
             TableColumn::make('exception_class')
-                ->label('Exception')
+                ->label('Исключение')
                 ->search()
                 ->width('260px'),
             TableColumn::make('exception_message')
                 ->label(__('Сообщение'))
                 ->search(),
-            TableColumn::make('failed_at')->sort()->asDateTime(),
+            TableColumn::make('failed_at')->label('Упало')->sort()->asDateTime(),
         ];
     }
 
     public function filters(): array
     {
         return [
-            InputFilter::for('connection')->label('Connection'),
-            InputFilter::for('queue')->label('Queue'),
+            InputFilter::for('connection')->label('Соединение'),
+            InputFilter::for('queue')->label('Очередь'),
             InputFilter::for('exception')
-                ->label('Exception (substring)'),
+                ->label('Исключение (подстрока)'),
             DateRangeFilter::for('failed_at')->label(__('Период падений')),
             OptionsFilter::for('exception_class_group')
                 ->label(__('Группа exception')),
@@ -87,22 +89,23 @@ final class FailedJobResource extends Resource
     public function actions(): array
     {
         return [
-            Button::make('Retry')
+            // A Russian caption derives no name, so the names are explicit.
+            Button::make('Перезапустить')->withName('retry')
                 ->method('retry')
                 ->permission('admin.system.jobs.failed.retry')
                 ->confirm(__('Перезапустить упавший job?')),
 
-            Button::make('Forget')
+            Button::make('Удалить')->withName('forget')
                 ->method('forget')
                 ->permission('admin.system.jobs.failed.forget')
                 ->confirm(__('Удалить запись из failed_jobs? Job не будет перезапущен.')),
 
-            BulkAction::make('Retry batch')
+            BulkAction::make('Перезапустить выбранные')->withName('retry_batch')
                 ->method('retryBatch')
                 ->permission('admin.system.jobs.failed.retry')
                 ->requiresAtLeast(1),
 
-            BulkAction::make('Forget batch')
+            BulkAction::make('Удалить выбранные')->withName('forget_batch')
                 ->method('forgetBatch')
                 ->permission('admin.system.jobs.failed.forget')
                 ->requiresAtLeast(1),
