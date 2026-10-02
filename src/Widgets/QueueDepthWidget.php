@@ -40,7 +40,9 @@ class QueueDepthWidget extends StatsOverviewWidget
         // The widget lands on a dashboard it does not own, next to numbers
         // about something else entirely — without a title the counts are
         // anonymous.
-        $this->title(__('Очереди'))->size(4);
+        // A source string: core translates the title per request, while a
+        // widget may be built once, in another locale.
+        $this->title('Очереди')->size(4);
     }
 
     public static function slug(): string

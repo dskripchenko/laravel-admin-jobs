@@ -38,23 +38,25 @@ final class JobBatchResource extends Resource
 
     public static function label(): string
     {
-        return 'Batch jobs';
+        return __('Пакеты задач');
     }
 
     public function columns(): array
     {
         return [
-            TableColumn::make('id')->copyable()->width('260px'),
-            TableColumn::make('name')->search()->sort(),
-            TableColumn::make('total_jobs')->sort()->align('right'),
-            TableColumn::make('pending_jobs')->sort()->align('right'),
-            TableColumn::make('failed_jobs')->sort()->align('right'),
+            // Every column carries a label: one made from the column name
+            // stays English in every panel language.
+            TableColumn::make('id')->label('ID')->copyable()->width('260px'),
+            TableColumn::make('name')->label('Имя batch')->search()->sort(),
+            TableColumn::make('total_jobs')->label('Всего')->sort()->align('right'),
+            TableColumn::make('pending_jobs')->label('В ожидании')->sort()->align('right'),
+            TableColumn::make('failed_jobs')->label('Упало')->sort()->align('right'),
             TableColumn::make('progress_pct')
-                ->label('Progress')
+                ->label('Прогресс')
                 ->align('right'),
-            TableColumn::make('created_at')->sort()->asDateTime(),
-            TableColumn::make('finished_at')->sort()->asDateTime(),
-            TableColumn::make('cancelled_at')->asDateTime()->defaultHidden(),
+            TableColumn::make('created_at')->label('Создано')->sort()->asDateTime(),
+            TableColumn::make('finished_at')->label('Завершено')->sort()->asDateTime(),
+            TableColumn::make('cancelled_at')->label('Отменено')->asDateTime()->defaultHidden(),
         ];
     }
 
@@ -68,12 +70,13 @@ final class JobBatchResource extends Resource
     public function actions(): array
     {
         return [
-            Button::make('Cancel batch')
+            // A Russian caption derives no name, so the names are explicit.
+            Button::make('Отменить batch')->withName('cancel_batch')
                 ->method('cancel')
                 ->permission('admin.system.jobs.batches.manage')
                 ->confirm(__('Отменить batch? Pending-jobs не будут выполнены.')),
 
-            Button::make('Retry failed')
+            Button::make('Перезапустить упавшие')->withName('retry_failed')
                 ->method('retryFailed')
                 ->permission('admin.system.jobs.batches.manage')
                 ->confirm(__('Перезапустить упавшие job\'ы внутри batch?')),
