@@ -44,6 +44,15 @@ final class JobBatchResource extends Resource
         return __('Пакеты задач');
     }
 
+    /**
+     * One record's name, for the panel's titles, confirmations and toasts
+     * ("Create job batch"). A core without singularLabel() ignores it.
+     */
+    public static function singularLabel(): string
+    {
+        return __('пакет задач');
+    }
+
     public function columns(): array
     {
         return [
